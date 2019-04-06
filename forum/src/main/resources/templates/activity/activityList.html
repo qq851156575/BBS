@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh"  xmlns:th="http://www.thymeleaf.org"
+       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <meta charset="UTF-8">
+    </head>
+<body >
+<div class="two_cover">
+	<h1>Discuss</h1>
+</div>
+<div class="two category" th:insert="@{base/header} :: html"></div>
+	<div class="forum">
+	<div class="forum-header">
+			<img alt="" src="" th:src="@{/images/forumCategory/chat.png}">
+			<h1>校园活动</h1>
+			<a sec:authorize="isAuthenticated()" class="shade" th:href="@{/schoolActivity/form}">发起活动</a>
+			<a sec:authorize="!isAuthenticated()" data-toggle="modal" data-target="#SignIn" class="shade" href="">发起活动</a>
+		</div>
+		<div class="forum-content">
+		    <div style="padding: 0px 40px;">
+		        <article style="margin: 10px 0" th:each="data:${page.result}">
+		            <h2><a th:href="@{/schoolActivity/details(id=${data.id})}" style="color: #08aba6;font-size: 20px;line-height: normal;" th:text="${data.title}"   ></a></h2>
+		            <div> <span>Posted on July 10, 2017</span><span>Leave a comment</span><span>Posted in Uncategorized	</span></div>
+						<p th:text="${data.content}"
+							style="border:#ccc;overflow: hidden; display: -webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical;"></p>
+					</article>
+		        <div th:replace="@{base/paging} :: html" ></div>
+		    </div>
+		</div>
+</div>
+<div>
+
+</div>
+
+<div th:insert="@{base/footer} :: html"></div>
+
+</body>
+</html>

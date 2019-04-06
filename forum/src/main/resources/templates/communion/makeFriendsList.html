@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh"  xmlns:th="http://www.thymeleaf.org"
+	  xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+	<meta charset="UTF-8">
+	<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js" th:src="@{/js/jquery-3.3.1.min.js}"></script>
+</head>
+<script type="text/javascript">
+    $(function(){
+        $(".forum-reply-line-body-drop-down").children("img").click(function() {
+            $(this).siblings("ul").fadeToggle(500);
+        })
+    })
+</script>
+<body >
+<div class="two_cover">
+	<h1>Discuss</h1>
+</div>
+<div class="two category" th:insert="@{base/header} :: html"></div>
+<div class="forum">
+	<div class="forum-header">
+		<img alt="" src="" th:src="@{/images/forumCategory/chat.png}">
+		<h1>互动交友</h1>
+		<a sec:authorize="isAuthenticated()" class="shade" th:href="@{/makeFriends/form}">+新主题</a>
+		<a sec:authorize="!isAuthenticated()" data-toggle="modal" data-target="#SignIn" class="shade" href="">+新主题</a>
+	</div>
+	<div class="forum-content">
+		<div class="forum-content-tops" >
+			<div class="forum-line" th:each="data:${page.result}" th:if="${data.status} eq '1'">
+				<a class="forum-line" th:href="@{/makeFriends/post(id=${data.id})}">
+					<img src="" th:src="@{/images/forum/icon-sprites-24-sc2-reen.png}">
+<!--
+<span th:text="'['+${#DictUtils.getDictLabel(data.type,'subjects','')}+']'"></span>
+-->
+					<p class="forum-line-heading" th:text="${data.title}" style="border:#ccc;overflow: hidden; display: -webkit-box;-webkit-line-clamp:1;-webkit-box-orient: vertical;" >【置顶】问题求助大佬！！！！</p>
+					<span class="forum-line-replies"><img src="" th:src="@{/images/forum/icon-sprites-16-blue-lht.png}"><span style="display:inline-block;    padding-top: 0px;" th:text="${data.floorCount}">5</span></span>
+					<span class="forum-line-author" th:text="${data.user.userName}">端木子</span>
+					<span class="forum-line-timestamp" th:text="${#dates.format(data.postingTime,'yyyy年MM月dd日')}">2018年11月12日</span>
+				</a>
+
+				<div sec:authorize="hasAnyAuthority('ADMIN')" class="forum-reply-line-body-drop-down">
+					<img alt="" src="" th:src="@{/images/forum/drop-down.png}">
+					<!-- <button onclick="getId(this.value)" th:value="${data.id}">回复</button> -->
+					<ul sec:authorize="hasAnyAuthority('ADMIN','MANAGE')" th:if="${data.user.id} eq ${currentUser.id}">
+						<a th:href="@{/makeFriends/removeStatus(id=${data.id})}"><li >取消置顶</li></a>
+						<a th:href="@{/makeFriends/audit(id=${data.id})}"> <li >删除</li></a>
+						<!--<li sec:authorize="isAuthenticated()" th:if="${data.user.id} eq ${currentUser.id}">删除</li>-->
+					</ul>
+				</div>
+			</div>
+		</div>
+		<div  class="forum-line" th:each="data:${page.result}" th:if="${data.status} eq '0'">
+
+			<a    class="forum-line" target="_blank" th:href="@{/makeFriends/post(id=${data.id})}">
+
+				<img src="" th:src="@{/images/forum/icon-sprites-24-sc2-gren.png}">
+<!--
+				<p th:text="'['+${#DictUtils.getDictLabel(data.type,'subjects','')}+']'"></p>
+-->
+				<p class="forum-line-heading" th:text="${data.title}" style="border:#ccc;overflow: hidden; display: -webkit-box;-webkit-line-clamp:1;-webkit-box-orient: vertical;" >问题求助大佬！！！！</p>
+				<span class="forum-line-replies"  ><img src="" th:src="@{/images/forum/icon-sprites-16-blue-lht.png}" ><span style="display:inline-block;    padding-top: 0px;" th:text="${data.floorCount}">5</span></span>
+				<span class="forum-line-author" th:text="${data.user.userName}">端木子</span>
+				<span class="forum-line-timestamp" th:text="${#dates.format(data.postingTime,'yyyy年MM月dd日')}">2018年11月12日</span>
+
+			</a>
+			<div sec:authorize="hasAnyAuthority('ADMIN')" class="forum-reply-line-body-drop-down">
+				<img alt="" src="" th:src="@{/images/forum/drop-down.png}">
+				<!-- <button onclick="getId(this.value)" th:value="${data.id}">回复</button> -->
+				<ul sec:authorize="hasAnyAuthority('ADMIN','MANAGE')" th:if="${data.user.id} eq ${currentUser.id}">
+					<a th:href="@{/makeFriends/updateStatus(id=${data.id})}"> <li >置顶</li></a>
+					<a th:href="@{/makeFriends/delete(id=${data.id})}"> <li >删除</li></a>
+					<!--<li sec:authorize="isAuthenticated()" th:if="${data.user.id} eq ${currentUser.id}">删除</li>-->
+				</ul>
+			</div>
+		</div>
+
+
+	</div>
+
+	<div th:replace="@{base/paging} :: html" ></div>
+
+</div>
+
+<div th:insert="@{base/footer} :: html"></div>
+
+</body>
+</html>

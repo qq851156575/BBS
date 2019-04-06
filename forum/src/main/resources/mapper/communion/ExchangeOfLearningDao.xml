@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.piu.communion.dao.ExchangeOfLearningDao">
+<sql id="exchangeOfLearningColumns">
+	a.id,
+	a.user_id as "user.id",
+	a.hot,
+	a.status,
+	a.title,
+	a.type,
+	a.posting_time,
+	a.content,
+	a.floor_count,
+	a.down_url,
+	a.del_flag,
+	a.create_by,
+	a.create_date,
+	a.update_by,
+	a.update_date,
+	u.user_name as "user.userName",
+	u.img as "user.img"
+</sql>
+
+	<sql id="exchangeOfLearningJoin">
+		LEFT JOIN sys_user u on u.id =a.user_id
+	</sql>
+	<select id="get" resultType="com.piu.communion.entity.ExchangeOfLearning">
+	SELECT
+		<include refid="exchangeOfLearningColumns"/>
+		FROM exchange_of_learning a
+		<include refid="exchangeOfLearningJoin"/>
+	WHERE a.id =#{id}
+</select>
+	<select id="findList" resultType="com.piu.communion.entity.ExchangeOfLearning">
+	SELECT
+		<include refid="exchangeOfLearningColumns"/>
+		FROM exchange_of_learning a
+		<include refid="exchangeOfLearningJoin"/>
+		WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+	<insert id="insert">
+		INSERT INTO exchange_of_learning(
+		id,
+		user_id,
+		hot,
+		content,
+		status,
+		type,
+		title,
+		down_url,
+		floor_count,
+		posting_time,
+		del_flag,
+		create_by,
+		create_date,
+		update_by,
+		update_date
+		)VALUES(
+		#{id},
+		#{user.id},
+		#{hot},
+		#{content},
+		#{status},
+		#{type},
+		#{title},
+		#{downUrl},
+		#{floorCount},
+		#{postingTime},
+		#{delFlag},
+		#{createBy.id},
+		#{createDate},
+		#{updateBy.id},
+		#{updateDate}
+		)
+	</insert>
+	<update id="update">
+update exchange_of_learning set
+		content=#{content},
+		title=#{title},
+		posting_time=#{postingTime},
+		update_by=#{updateBy.id},
+		update_date=#{updateDate}
+		where  id =#{id}
+	</update>
+
+
+	<update id="updateFloorCount">
+update exchange_of_learning set
+		floor_count=#{floorCount},
+		where  id =#{id}
+	</update>
+
+	<update id="updateStatus">
+update exchange_of_learning set
+		status=#{status},
+		update_by=#{updateBy.id},
+		update_date=#{updateDate}
+		where  id =#{id}
+	</update>
+	
+	
+	
+	<update id="delete">
+		UPDATE exchange_of_learning SET
+		del_flag =
+		#{DEL_FLAG_DELETE}
+		WHERE
+		id = #{id}
+	</update>
+	
+	<update id="audit">
+		UPDATE exchange_of_learning SET
+		del_flag =
+		#{DEL_FLAG_AUDIT}
+		WHERE
+		id = #{id}
+	</update>
+</mapper>

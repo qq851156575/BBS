@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="zh"  xmlns:th="http://www.thymeleaf.org"
+       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <meta charset="UTF-8">
+	<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js" th:src="@{/js/jquery-3.3.1.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/wangEditor.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/wangEditor-fullscreen-plugin.js}"></script>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/wangEditor-fullscreen-plugin.css}"/>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/wangEditor.css}"/>
+</head>
+<script th:inline="javascript">	
+
+	function getId(superiorId) {
+        $("#superiorId").val(superiorId);
+        $.ajax({
+            url : '[(@{/fleaMarketReply/superior})]',
+            type : "POST",
+            data : "superiorId=" + superiorId,
+            dataType : "TEXT",
+            async : false,
+            success : function(msg) {
+                $("#div1").html(msg);
+
+
+            }
+        });
+    }
+function remove() {
+    $("#div1").html("");
+    $("#superiorId").val("");
+}
+</script>
+<script type="text/javascript">
+	$(function(){
+		$(".forum-reply-line-body-drop-down").children("img").click(function() {
+			$(this).siblings("ul").fadeToggle(500);
+		})
+	})
+</script>
+
+<body >
+<div class="two_cover">
+	<h1>Discuss</h1>
+</div>
+<div class="two category" th:insert="@{base/header} :: html"></div>
+<div class="forum">
+	
+	<div class="forum-reply-title">
+			<img alt="" src="" th:src="@{/images/forumCategory/chat.png}">
+			<h1 th:text="${fleaMarket.title}">问题求助大佬！！！</h1>
+			<a class="shade" th:href="@{/fleaMarket/fleaMarketAdd}">回复</a>
+		<a sec:authorize="isAuthenticated()" th:if="${fleaMarket.user.id} eq ${currentUser.id}" class="shade" th:href="@{/fleaMarket/form(id=${fleaMarket.id})}">编辑</a>
+		<a sec:authorize="isAuthenticated()" th:if="${fleaMarket.user.id} eq ${currentUser.id}" class="shade" th:href="@{/fleaMarket/delete(id=${fleaMarket.id})}">删除</a>
+		<a sec:authorize="hasAnyAuthority('ADMIN')"th:if="not ${fleaMarket.user.id} eq  ${currentUser.id}" class="shade" th:href="@{/fleaMarket/audit(id=${fleaMarket.id})}">删除</a>
+		<span>学习交流</span>
+	</div>
+	<div class="forum-reply-content">
+	<div class="forum-reply-line">
+		<div class="forum-reply-line-author">
+			<img src="" th:src="${fleaMarket.user.img}">
+			<a th:text="${fleaMarket.user.userName}">端木子</a>
+			<a>12帖子</a>
+		</div>
+		<div >
+			<p th:text="${#dates.format(fleaMarket.postingTime,'yyyy年MM月dd日')}">2016年3月24日</p>
+			<p th:utext="${fleaMarket.content}"></p>
+		</div>
+
+
+		<div class="forum-reply-title" th:if="${not #lists.isEmpty(fleaMarket.downUrl)}" style="margin-top: 100px;">
+			<a class="shade"   th:href="${fleaMarket.downUrl}">附件下载</a>
+		</div>
+	</div>
+
+	<div class="forum-reply-line"th:each="data:${page.result}">
+		<div class="forum-reply-line-author" >
+			<img src="" th:src="${data.user.img}">
+			<a th:text="${data.user.userName}">端木子</a>
+			<a>12帖子</a>
+		</div>
+		<div class="forum-reply-line-body">
+			<p th:text="${#dates.format(data.replyDate,'yyyy年MM月dd日')}">2016年3月24日</p>
+
+			<div class="forum-reply-line-body-leadOfUser" th:if="${not #lists.isEmpty(data.superiorReply)}"th:utext="${data.superiorReply}">
+
+				<p>引用  <a>张三：</a><span style="float: right">2016年3月24日</span></p>
+
+				<p style="width: 100%">我觉着应该这样………………</p>
+			</div>
+			<p th:utext="${data.replyContent}">“新规定”旨在解决上述问题。</p>
+		</div>
+		<div  class="forum-reply-line-body-drop-down">
+			<img alt="" src="" th:src="@{/images/forum/drop-down.png}">
+			<!-- <button onclick="getId(this.value)" th:value="${data.id}">回复</button> -->
+			<ul>
+				<li th:onclick="'javascript:getId(\''+${data.id}+'\');'">回复</li>
+				<!-- <li>举报</li> -->
+				<a sec:authorize="hasAnyAuthority('ADMIN','MANAGE')" th:if="${data.user.id} eq ${currentUser.id}" th:href="@{/fleaMarketReply/delete(id=${data.id})}"><li>删除</li></a>
+			</ul>
+		</div>
+	</div>
+	</div>
+
+		<form th:action="@{/fleaMarketReply/save}" th:method="post"
+			th:object="${fleaMarketReply}">
+			<input type="hidden" name="fleaMarket.id"
+				th:value="*{fleaMarket.id}"> <input type="hidden"
+				name="fleaMarket.floorCount"
+				th:value="*{fleaMarket.floorCount}"> <input
+				id="superiorId" type="hidden" name="superiorId"
+				th:value="*{superiorId}">
+			<div id="div1" style="width: 240px;"></div>
+			<div style="margin-top: 40px;">
+				<p style=" font-weight: 600; font-size: 25px; margin: 10px 0px;">发表评论</p>
+				<div style="margin: 20px 0px;">
+					<div id="div2"sec:authorize="isAuthenticated()">
+
+
+					</div>
+					<div style="display:none">
+					<textarea  id="text1" cols="110" rows="10" style="padding: 20px;color: black;"
+						name="replyContent" th:value="*{replyContent}" sec:authorize="isAuthenticated()"></textarea>
+					</div>
+						<h1 sec:authorize="!isAuthenticated()" style="margin: 80px auto 150px;text-align: center;">登录后即可评论！</h1>
+				</div>
+			</div>
+			<button class="shade" type="submit" style="margin-bottom: 60px" sec:authorize="isAuthenticated()">提交评论</button>
+		</form>
+		
+		
+
+	</div>
+<div th:insert="@{base/footer} :: html"></div>
+</body><script type="text/javascript" th:inline="javascript">
+    var E = window.wangEditor
+    var editor = new E('#div2')
+    var $text1 = $('#text1')
+
+    editor.customConfig.onchange = function (html) {
+        // 监控变化，同步更新到 textarea
+        $text1.val(html)
+    }
+    editor.customConfig.uploadImgServer ='[(@{/uploadImg})]'
+
+    /* 定义上传图片的默认名字 */
+    editor.customConfig.debug = location.href.indexOf('wangeditor_debug_mode=1') > 0
+    editor.customConfig.uploadImgTimeout = 300000
+    editor.customConfig.uploadFileName = 'myFileName'
+    editor.create()
+
+    // 初始化 textarea 的值
+    E.fullscreen.init('#div2');
+    $text1.val(editor.txt.html())
+</script>
+</html>

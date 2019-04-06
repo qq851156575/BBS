@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta name="description" content="">
+<meta name="author" content="">
+<title>Signin Template for Bootstrap</title>
+<!-- Bootstrap core CSS -->
+<link href="asserts/css/bootstrap.min.css" rel="stylesheet">
+<!-- Custom styles for this template -->
+<link href="asserts/css/signin.css" rel="stylesheet">
+</head>
+
+<body class="text-center">
+	<table>
+		<tr>
+			<th style="text-align: center;vertical-align: middle; width: 150px;">
+				状态</th>
+			<th style="text-align: center;vertical-align: middle;">帖子标题</th>
+			<th style="text-align: center;vertical-align: middle; width: 100px;">
+				回复数</th>
+			<th style="text-align: center;vertical-align: middle; width: 100px;">
+				发表者</th>
+			<th style="text-align: center;vertical-align: middle; width: 200px;">
+				最后回复</th>
+			<th style="text-align: center;vertical-align: middle; width: 150px;">
+				操作</th>
+		</tr>
+		<tr th:each="data:${list}">
+		<td th:text="${data.status}"></td>
+		<td th:text="${data.hot}"></td>
+		<td th:text="${data.content}"></td>
+		 <td><a th:href="@{/exchangeOfLearning/delete(id=${data.id})}">删除</a></td>
+
+	</table>
+<a th:href="@{/exchangeOfLearning/form}">zzzz</a>
+</body>
+
+</html>

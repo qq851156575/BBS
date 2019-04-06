@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.piu.software.dao.FileInterfaceDao">
+    <sql id="FileInterfaceColumns">
+        f.id,
+        f.path,
+        f.download_id as "download.id",
+        f.del_flag,
+        f.create_by,
+        f.create_date,
+        f.update_by,
+        f.update_date
+    </sql>
+<sql id="FileInterfaceJoin">
+    LEFT JOIN download d on d.id =f.download_id
+</sql>
+    <select id="get" resultType="com.piu.software.entity.FileInterface">
+        SELECT
+        <include refid="FileInterfaceColumns"/>
+        FROM file_interface f
+        <include refid="FileInterfaceJoin"/>
+        WHERE f.id = #{id}
+    </select>
+    <select id="findList" resultType="com.piu.software.entity.FileInterface">
+        SELECT
+        <include refid="FileInterfaceColumns"/>
+        FROM file_interface f
+        <include refid="FileInterfaceJoin"/>
+        WHERE f.download_id = #{download.id}
+    </select>
+    <insert id="insert">
+        INSERT INTO file_interface
+            (
+             id,
+             download_id,
+             path,
+             del_flag,
+             create_by,
+             create_date,
+             update_by,
+             update_date
+                )
+        VALUES
+               (
+                #{id},
+                #{download.id},
+                #{path},
+                #{delFlag},
+                #{createBy.id},
+                #{createDate},
+                #{updateBy.id},
+                #{updateDate}
+                   )
+    </insert>
+    <delete id="delete">
+        delete from file_interface
+        WHERE
+            download_id = #{download.id}
+    </delete>
+</mapper>

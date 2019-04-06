@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.piu.sys.dao.ApplicationMessageDao">
+	
+	<select id="get" resultType="com.piu.sys.entity.ApplicationMessage">
+		SELECT 
+			id,
+		  	application_content as applicationContent,
+			application_plate  as applicationPlate,
+			application_time,
+			result as result,
+			del_flag,
+			create_by as "createBy.id",
+			create_date as applicationTime,
+			update_by as "createBy.id",
+			update_date as updateDate
+		FROM
+		application_message
+		WHERE id = #{id}
+	</select>
+	<select id="findByUserId" resultType="com.piu.sys.entity.ApplicationMessage">
+		SELECT 
+			id,
+		  	application_content as applicationContent,
+			application_plate  as applicationPlate,
+			application_time  as applicationTime,
+			result as result,
+			del_flag,
+			create_by,
+			create_date,
+			update_by,
+			update_date
+		FROM
+		application_message
+		WHERE create_by = #{userID} and del_flag =#{delFlag} and result=#{result}
+	</select>
+	<select id="findList" resultType="com.piu.sys.entity.ApplicationMessage">
+		SELECT 
+			a.id,
+		  	a.application_content as applicationContent,
+			a.application_plate  as applicationPlate,
+			a.application_time,
+			a.result as result,
+			a.del_flag,
+			a.create_by as "createBy.id",
+			a.create_date as applicationTime,
+			a.update_by as "createBy.id",
+			a.update_date as updateDate,
+			u.user_name as "createBy.userName"
+		FROM
+		application_message a,
+		sys_user u	
+		WHERE a.create_by=u.id AND a.del_flag =#{delFlag}
+	</select>
+	
+	<insert id="insert">
+		INSERT INTO application_message(
+			id,
+		  	application_content,
+			application_plate,
+			application_time,
+			result,
+			del_flag,
+			create_by,
+			create_date,
+			update_by,
+			update_date
+		)VALUES(
+			#{id},
+			#{applicationContent},
+			#{applicationPlate},
+			#{applicationTime},
+			#{result},
+			#{delFlag},
+			#{createBy.id},
+			#{createDate},
+			#{updateBy.id},
+			#{updateDate}
+		)
+	</insert>
+	<update id="update">
+		UPDATE application_message SET
+		application_content=#{applicationContent},
+		application_plate=#{applicationPlate},
+		application_time=#{applicationTime},
+		result =#{result},
+		update_by=#{updateBy.id},
+		update_date=#{updateDate}
+		where  id =#{id}
+	</update>
+	<delete id="delete">
+		UPDATE application_message SET 
+			del_flag = #{DEL_FLAG_DELETE}
+		WHERE id = #{id}
+	</delete>
+</mapper>

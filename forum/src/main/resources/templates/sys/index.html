@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta charset="UTF-8">
+<link
+	href='https://fonts.googleapis.com/css?family=Titillium+Web:400,300,600'
+	rel='stylesheet' type='text/css'>
+<link rel="stylesheet" href="css/login.css" th:href="@{/css/login.css}">
+<script th:inline="javascript">
+
+   	var basePath = /*[[${#httpServletRequest.getScheme() + "://" + #httpServletRequest.getServerName() + ":" + #httpServletRequest.getServerPort() + #httpServletRequest.getContextPath()}]]*/;
+	var realVerif;
+	var emailVerif;
+	var time = 0;
+	var pass = false;
+
+/*<![CDATA[*/
+	$(function(){
+		getVerificationCode();
+	});
+	
+	function isUniqueUser(){
+		var userName = $("#signup").find("[name='userName']").val();
+		if(!userName.length == 0){
+			$.ajax({
+					url : '[(@{/user/isUniqueUser})]',
+					type : "POST",
+					dataType: "text",
+					data : "userName="+userName,
+					async : true,
+					contentType: "application/x-www-form-urlencoded; charset=utf-8", 
+					success: function(e){
+						$("#signup").find("h1").html(e).css("color", "indianred");
+						if(e=="您可以使用该用户名！"){
+							pass = true;
+						}else{
+							pass = false;
+						}
+					},
+					error : function(){
+						$("#signup").find("h1").html("请重新刷新页面！").css("color", "indianred");
+					}
+				});
+		}else{
+			return;		
+		}
+	
+	};
+	
+	/* 发送电子邮件 */
+	function sendEmail(){
+	 	var email = $("#signup").find("[name='mail']").val();
+		var mailReg =  /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+		if(mailReg.test(email)){
+			//判断计时器是否处于关闭状态
+		    if (time == 0) {
+		        time = 10; //设定间隔时间（秒）
+		        //启动计时器，倒计时time秒后自动关闭计时器。
+		        var index = setInterval(function(){
+		            time--;
+		            if (time == 0) {
+		                clearInterval(index);
+		            }
+		        }, 1000);
+			 
+				$.ajax({
+					url : '[(@{/getEmailVerif})]',
+					type : "POST",
+					dataType: "text",
+					data : "email="+email,
+					async : false,
+					success: function(e){
+						emailVerif = e;
+						$("#signup").find("h1").html("邮件已发送！").css("color", "indianred");
+					},
+					error : function(e){
+						$("#signup").find("h1").html("邮箱不可用或已被使用！").css("color", "indianred");
+						clearInterval(index);
+						time = 0;
+					}
+				});
+			
+		    }else{
+		        $("#signup").find("h1").html("请在"+time+"秒后重试！").css("color", "indianred");
+		    }
+		    
+		　　}else{
+		　　　　$("#signup").find("h1").html("请正确填写信息！").css("color", "indianred");
+		}
+		
+	};
+	/* 注册 */
+	function signup(){
+		var isRun = true;
+			if(pass){
+				isRun = true;
+			}else{
+				isRun = false;
+			}
+			if(isRun==true){
+				$("#signup").find("[required='required']").each(function(i, element) {
+					var value = $(this).val();
+					 if(value.length==0){
+						$("#signup").find("h1").html("请填写信息！").css("color", "indianred");
+						isRun = false;
+						return;
+					} 
+				});
+			}
+			if(isRun==true){
+				if(!(emailVerif.toLowerCase() == $("#emailVerif").val().toLowerCase())){
+					$("#signup").find("h1").html("验证码错误！").css("color", "indianred");
+					isRun = false;
+					return;		
+				}
+			} 
+			if(isRun==true){
+					$.ajax({
+						url : '[(@{/user/register})]',
+						type: "POST",
+						data: $("#signupAjax").serialize(),
+						async : false,
+						success: function(){
+							$(".tab-group").find("a").first().trigger('click');
+							$("#login").find("h1").html("注册成功！");
+						},
+						error: function(){
+							$("#signup").find("h1").html("请重新输入信息！");
+						}
+					});
+				}
+	};
+	
+	/* 获取验证码 */
+	function getVerificationCode(){
+		$.ajax({
+				url : '[(@{/getVerificationCode})]',
+				type: "POST",
+				dataType: "json",
+				async : true,
+				success: function(e){
+					realVerif = eval(e)[0];
+					document.getElementById("verifImg").setAttribute("src", eval(e)[1]);
+				}
+			});
+	}
+	
+	/* 登录 */
+	function login(){
+		var isRun = true;
+		var form = $("#login").find("form");
+		$("#login").find("[required='required']").each(function(i, element) {
+			var value = $(this).val();
+			 if(value.length==0){
+				$("#login").find("h1").html("请填写信息！").css("color", "indianred");
+				isRun = false;
+				return;
+			} 
+		});
+		if(isRun==true){
+			if(!(realVerif.toLowerCase() == $("#verificationCode").val().toLowerCase())){
+				$("#login").find("h1").html("验证码错误！").css("color", "indianred");
+				getVerificationCode();
+				$("#verificationCode").val("");
+				isRun = false;
+				return;		
+			}
+		} 
+		if(isRun==true){
+			var username = $("#login").find("#username").val();
+			var password = $("#login").find("#password").val();
+			var verificationCode = $("#login").find("#verificationCode").val();
+		 $.ajax({
+				url : '[(@{/login})]',
+				type: "post",
+				data: "username="+username+"&password="+password+"&verificationCode="+verificationCode,
+				async : false,
+				success: function(e){
+                       location.reload();
+				},
+				error: function(){
+					$("#login").find("h1").html("密码错误或被封禁中！").css("color", "indianred");
+				}
+			}); 
+		};
+		
+	}
+	
+/*]]>*/	
+</script>
+
+</head>
+<body>
+
+
+	<div class="body">
+	<div class="form" style="margin: 0px;">
+		<!-- <div style="margin-bottom: 40px; text-align: center;">
+			<img src="img/Logo.png" th:src="@{/images/Logo.png}" height="200px"
+				width="200px" />
+		</div> -->
+
+		<ul class="tab-group">
+			<li class="tab active"><a href="#login">登录</a></li>
+			<li class="tab"><a href="#signup">注册</a></li>
+		</ul>
+
+		<div class="tab-content">
+			<div id="login">
+				<h1>Welcome Back!</h1>
+
+				<form action="/" method="post"  th:action="@{/login}" th:method="POST">
+
+					<div class="field-wrap">
+						<label> 用户名<span class="req">*</span>
+						</label> <input id="username" name="username" autocomplete="off" required="required" 
+						readonly="readonly" onfocus="this.removeAttribute('readonly');" onblur="this.setAttribute('readonly',true);"
+						/>
+					</div>
+
+					<div class="field-wrap">
+						<label> 密码<span class="req">*</span>
+						</label> <input type="password" id="password" name="password" autocomplete="off" required="required"
+						readonly="readonly" onfocus="this.removeAttribute('readonly');" onblur="this.setAttribute('readonly',true);"
+						/>
+					</div>
+					
+					<div class="field-wrap">
+						<label> 验证码<span class="req">*</span>
+						</label> <input style="width: 45%" id="verificationCode" name="verificationCode" autocomplete="off" required="required"
+						readonly="readonly" onfocus="this.removeAttribute('readonly');" onblur="this.setAttribute('readonly',true);"
+						/>
+						<img id="verifImg" alt="请重新刷新" class="verifImg" onclick="getVerificationCode()">
+					</div>
+
+					<p class="forgot">
+						<a href="#" th:href="@{/user/settings/forgotPassword}">忘记密码?</a>
+					</p>
+
+					<button class="button button-block" type="button" onclick="login()">
+					登录
+					</button>
+
+				</form>
+
+			</div>
+
+			<div id="signup">
+				<form  id="signupAjax" action="/" method="post" autocomplete="off">
+					<h1>Welcome To Join Us!</h1>
+
+					<div class="field-wrap">
+						<label> 昵称<span class="req">*</span>
+						</label> <input id="userName" name="userName" autocomplete="off" required="required" onchange="isUniqueUser()"
+						 readonly="readonly" onfocus="this.removeAttribute('readonly');" onblur="this.setAttribute('readonly',true);" />
+					</div>
+
+					<div class="field-wrap">
+						<label> 密码<span class="req">*</span>
+						</label> <input type="password" id="password" name="password" autocomplete="new-password" required="required"
+						readonly="readonly" onfocus="this.removeAttribute('readonly');" onblur="this.setAttribute('readonly',true);"
+						/>
+					</div>
+					
+					<div class="field-wrap">
+						<label> 电子邮件<span class="req">*</span>
+						</label> <input type="email" id="mail" name="mail" autocomplete="off" required="required" 
+						readonly="readonly" onfocus="this.removeAttribute('readonly');" onblur="this.setAttribute('readonly',true);"
+						/>
+						<button class="sendEmail button button-block" type="button" onclick="sendEmail()">发送</button>
+					</div>
+					
+					<div class="field-wrap">
+						<label> 验证码<span class="req">*</span>
+						</label> <input id="emailVerif" name="emailVeritf" autocomplete="off" required="required"
+						readonly="readonly" onfocus="this.removeAttribute('readonly');" onblur="this.setAttribute('readonly',true);"
+						/>
+					</div>
+
+
+					<button id="register"  class="button button-block" type="button" onclick="signup()">加入我们</button>
+
+				</form>
+
+			</div>
+
+		</div>
+
+		</div>
+	</div>
+
+	<script src="https://cdn.bootcss.com/jquery/1.10.2/jquery.min.js"
+		th:src="@{/js/jquery-3.3.1.min.js}"></script>
+
+	<script>
+		$('.form').find('input, textarea').on('keyup blur focus', function(e) {
+	
+			var $this = $(this),
+				label = $this.prev('label');
+	
+			if (e.type === 'keyup') {
+				if ($this.val() === '') {
+					label.removeClass('active highlight');
+				} else {
+					label.addClass('active highlight');
+				}
+			} else if (e.type === 'blur') {
+				if ($this.val() === '') {
+					label.removeClass('active highlight');
+				} else {
+					label.removeClass('highlight');
+				}
+			} else if (e.type === 'focus') {
+	
+				if ($this.val() === '') {
+					label.removeClass('highlight');
+				} else if ($this.val() !== '') {
+					label.addClass('highlight');
+				}
+			}
+	
+		});
+	
+		$('.tab a').on('click', function(e) {
+	
+			e.preventDefault();
+	
+			$(this).parent().addClass('active');
+			$(this).parent().siblings().removeClass('active');
+	
+			target = $(this).attr('href');
+	
+			$('.tab-content > div').not(target).hide();
+	
+			$(target).fadeIn(600);
+	
+		});
+	</script>
+
+</body>
+</html>

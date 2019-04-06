@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="css/style.css" th:href="@{/css/style.css}">
+		<style>
+			.error{
+				color:red;
+				float: right;
+			}
+		</style>
+</head>
+<body class="back">
+	<div class="two_cover" style="height: 500px;"></div>
+	<div class="two" style="height: 500px;" th:insert="@{base/header} :: html"></div>
+	<div class="setting">
+		<div class="setting_left">
+			<ul>
+				<li><a th:href="@{/user/settings/base}">基本资料</a></li>
+				<li><a th:href="@{/user/settings/safe}">安全设置</a></li>
+				<li sec:authorize="hasAuthority('USER')"><a th:href="@{/user/applyForBarOwner}">申请吧主</a></li>
+			</ul>
+		</div>
+		<div class="setting_right">
+			<div class="manage_title">
+				<ul>
+					<li><a th:href="@{/user/settings/safe?classify=1}">修改密码</a></li>
+					<li><a th:href="@{/user/settings/safe?classify=2}">修改邮箱</a></li>
+				</ul>
+			</div>
+			<div class="manage_content safe_content" th:if="${classify}=='1'">
+				<form id="commentForm" th:action="@{/user/settings/safe?classify=1}" th:method="post" >
+					<div class="field" th:if="${message} != null and ${message} != ''">
+						<h1 th:text="${message}" style="color: red"></h1>
+					</div>
+					<div class="field">
+						<label>当前密码</label> <br /> <input type="password" id="currentPwd" name="currentPwd"/>
+					</div>
+					<div class="field">
+						<label>重置密码</label> <br /> <input type="password" id="newPwd" name="newPwd"/>
+					</div>
+					<div class="field">
+						<label>再次输入</label> <br /> <input type="password" id="newSecondPwd" name="newSecondPwd"/>
+					</div>
+					
+					<div class="field" style="text-align: center;margin-top: 40px;">
+						<button class="settings-button" type="submit">提&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;交</button>
+					</div>
+				</form>
+			</div>
+			<div class="manage_content safe_content" th:if="${classify}=='2'">
+				<form id="commentForm" th:action="@{/user/settings/safe?classify=2}" th:method="post" >
+					<div class="field" th:if="${message} != null and ${message} != ''">
+						<h1 th:text="${message}" style="color: red"></h1>
+					</div>
+					<div th:if="${isPass}==false">
+						<div class="field">
+							<label>验证码</label> <br /> <input type="text" id="captcha" name="captcha"/>
+							<button style="position: relative;left: 430px;top: -45px;" type="button" onclick="sendCaptcha()">发送</button>
+						</div>
+						<div class="field" style="text-align: center;margin-top: 40px;">
+							<button class="settings-button" type="submit">下&nbsp;&nbsp;一&nbsp;&nbsp;步</button>
+						</div>
+					</div>
+					<div th:if="${isPass}==true">
+						<div class="field">
+							<label>邮箱</label> <br /> <input type="email" id="newEmail" name="newEmail"/>
+						</div>
+						<div class="field">
+							<label>验证码</label> <br /> <input type="text" id="newCaptcha" name="newCaptcha"/>
+							<button style="position: relative;left: 430px;top: -45px;" type="button" onclick="sendCaptcha()">发送</button>
+						</div>
+						<div class="field" style="text-align: center;margin-top: 40px;">
+							<button class="settings-button" type="submit">提&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;交</button>
+						</div>
+					</div>
+				</form>
+			</div>
+			
+		</div>
+	</div>
+	<div th:replace="@{base/footer} :: html"></div>
+</body>
+<script th:src="@{/jquery-validation-1.19.0/dist/jquery.validate.min.js}"></script>
+<script th:src="@{/jquery-validation-1.19.0/dist/localization/messages_zh.js}"></script>
+<script th:inline="javascript">
+				$(function(){
+					// 在键盘按下并释放及提交后验证提交表单
+					  $("#commentForm").validate({
+						    rules: {
+						      currentPwd: {
+						        required: true,
+						        remote: {
+										    url: "[(@{/user/settings/isRealPwd})]",     //后台处理程序
+										    type: "post",               //数据发送方式
+										    dataType: "text",           //接受数据格式   
+										    data: {                     //要传递的数据
+										        currentPwd: function() {
+										            return $("#currentPwd").val();
+										        }
+										    }
+										}
+						      },
+						      newPwd: {
+						        required: true,
+						        minlength: 6
+						      },
+						      newSecondPwd: {
+						        required: true,
+						        minlength: 6,
+						        equalTo: "#newPwd"
+						      },
+						      captcha: {
+						      	required: true,
+						        remote: {
+										    url: "[(@{/user/settings/isRealCaptcha})]",     //后台处理程序
+										    type: "post",               //数据发送方式
+										    dataType: "text",           //接受数据格式   
+										    data: {                     //要传递的数据
+										        captcha: function() {
+										            return $("#captcha").val();
+										        }
+										    }
+										}
+						      },
+						      newCaptcha: {
+						      	required: true,
+						        remote: {
+										    url: "[(@{/user/settings/isRealCaptcha})]",     //后台处理程序
+										    type: "post",               //数据发送方式
+										    dataType: "text",           //接受数据格式   
+										    data: {                     //要传递的数据
+										        captcha: function() {
+										            return $("#newCaptcha").val();
+										        }
+										    }
+										}
+						      },
+						      newEmail : {
+						      	required : true,
+						      	email:true
+						      }
+						    },
+						    errorElement: "em",
+						    messages: {
+						      currentPwd: {
+						        required: "请输入当前密码",
+						      },
+						      newPwd: {
+						        required: "请输入修改后密码",
+						        minlength: "新密码长度不能小于 6 个字母"
+						      },
+						      newSecondPwd: {
+						        required: "请再次输入修改后密码",
+						        minlength: "新密码长度不能小于 6 个字母",
+						        equalTo: "两次密码输入不一致"
+						      },
+						      captcha: {
+						      	required: "请输入验证码",
+						      },
+						      newCaptcha: {
+						      	required: "请输入验证码",
+						      },
+						      newEmail :{
+						      	required : "请输入邮箱",
+						      	email: "请输入邮箱的正确格式"
+						      }
+						    } 
+						} 
+						);
+					});
+					
+					function sendCaptcha(){
+						//判断计时器是否处于关闭状态
+					    if (time == 0) {
+					        time = 10; //设定间隔时间（秒）
+					        //启动计时器，倒计时time秒后自动关闭计时器。
+					        var index = setInterval(function(){
+					            time--;
+					            if (time == 0) {
+					                clearInterval(index);
+					            }
+					        }, 1000);
+						 
+							$.ajax({
+								url : '[(@{/user/settings/sendCaptcha})]',
+								type : "POST",
+								data : {
+											email : function(){
+												return $("#newEmail").val();
+											}
+										},
+								dataType: "text",
+								async : false,
+								success: function(e){
+									alert("成功发送！");
+								},
+								error : function(){
+									alert("获取失败请重新发送！");
+									clearInterval(index);
+									time = 0;
+								}
+							});
+						}
+					}
+					
+		</script>
+		<script th:inline="javascript">
+				$(function(){
+					$(".two").css("background-image", "url('[(@{/images/user/backgrand.jpg})]')");
+				});
+		</script>
+		<script th:inline="javascript">
+				window.onload=function(){
+					var classify = [[${classify}]];
+					var indx = parseInt(classify);
+					$(".manage_title").find("li").eq(indx-1).css("border-bottom","3px solid #08aba6");
+				}
+		</script>
+</html>

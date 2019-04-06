@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="zh"  xmlns:th="http://www.thymeleaf.org"
+       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <meta charset="UTF-8">
+    <title>论坛</title>
+    <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js" th:src="@{/js/jquery-3.3.1.min.js}"></script>
+
+	<link rel="stylesheet" href="" th:href="@{/css/fileinput.min.css}"><link>
+	<link rel="stylesheet" th:href="@{/css/upload.css}">
+	<script th:src="@{/bootstrap-4.1.3-dist/js/bootstrap.js}"></script>
+	<script th:src="@{/js/fileinput.js}"></script>
+	<script th:src="@{/js/zh.js}"></script>
+	<script th:src="@{/js/piexif.js}"></script>
+	<script th:src="@{/js/purify.js}"></script>
+	<script th:src="@{/js/sortable.js}"></script>
+	<script th:src="@{/js/theme.js}"></script>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/wangEditor-fullscreen-plugin.css}"/>
+</head>
+<script th:inline="javascript">
+	$(function(){
+		$(".two").css("background-image", "url('[(@{/images/forumCategory/backgrand.jpg})]')");
+	});
+</script>
+<style>
+	.error{
+		color:red;
+	}
+</style>
+<body>
+<div class="two_cover">
+	<h1>Publish</h1>
+</div>
+<div class="two category" th:insert="@{base/header} :: html"></div>
+<div class="forum-publish">
+	<div class="forum-publish-user">
+		<h1>发表帖子</h1>
+		<img alt="" src="" th:src="@{/images/Logo.png}">
+		<span>校园活动</span>
+	</div>
+	<div class="forum-publish-content">
+
+		<form id="activity" class="form-signin" th:action="@{/schoolActivity/save}" th:method="post" enctype="multipart/form-data">
+			<label>请输入主题：</label><br />
+            <input id="title" name="title" th:value="*{schoolActivity.title}">
+			<div th:if="${ not #lists.isEmpty(schoolActivity.id)}">
+				<img th:src="${schoolActivity.posterPath}">
+			</div>
+			<div th:if="${#lists.isEmpty(schoolActivity.id)}">
+				<input  id="imageFile" name="imageFile" type="file"  class="file" data-allowed-file-extensions='["jpg","png"]' data-max-file-size="10240"
+					   data-show-upload="false" data-show-cancel="false" data-language="zh">
+			</div>
+			<div >
+				<label>请输入活动开始日期</label><br />
+				<input id="startTime" name="startTime"  type="date" th:value="*{#dates.format(schoolActivity.startTime,'yyyy-MM-dd')}">
+			</div>
+			<div >
+				<label>请输入活动结束日期</label><br />
+				<input id="endTime" name="endTime" type="date" th:value="*{#dates.format(schoolActivity.endTime,'yyyy-MM-dd')}">
+			</div>
+			<br>
+
+			<div id="div1"></div>
+
+			<div style="display:none">
+				<textarea id="text1" style="width:100%; height:200px;"  name="content" th:value="*{schoolActivity.content}"></textarea>
+			</div>
+
+
+			<button class="shade" type="submit">发表帖子</button>
+		</form>
+	</div>
+</div>
+<div th:insert="@{base/footer} :: html"></div>
+
+<script type="text/javascript" th:src="@{/js/wangEditor.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/wangEditor-fullscreen-plugin.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+    var E = window.wangEditor
+    var editor = new E('#div1')
+    var $text1 = $('#text1')
+
+    editor.customConfig.onchange = function (html) {
+        // 监控变化，同步更新到 textarea
+        $text1.val(html)
+    }
+
+    editor.customConfig.uploadImgServer ='[(@{/uploadImg})]'
+
+    /* 定义上传图片的默认名字 */
+    editor.customConfig.debug = location.href.indexOf('wangeditor_debug_mode=1') > 0
+    editor.customConfig.uploadImgTimeout = 300000
+    editor.customConfig.uploadFileName = 'myFileName'
+    editor.create()
+    E.fullscreen.init('#div1');
+    // 初始化 textarea 的值
+    editor.txt.html([[${schoolActivity.content}]])
+
+    $text1.val(editor.txt.html())
+
+</script>
+<script th:src="@{/jquery-validation-1.19.0/dist/jquery.validate.min.js}"></script>
+<script th:src="@{/jquery-validation-1.19.0/dist/localization/messages_zh.js}"></script>
+<script th:inline="javascript">
+    $(function(){
+        // 在键盘按下并释放及提交后验证提交表单
+        $("#activity").validate({
+                rules: {
+                    title: {
+                        required: true,
+                        minlength: 5,
+						maxlength: 40
+                    },
+                    text1: {
+                        required: true,
+                        minlength: 15
+                    },
+                    startTime: {
+                        required: true
+                    },
+                    endTime: {
+                        required: true
+                    },
+                    imageFile: {
+                        required: true
+                    }
+                },
+                errorElement: "em",
+                messages: {
+                    title: {
+                        required: "请输入标题",
+                        minlength: "请输入至少5个字符",
+						maxlength:"请输入少于40个字符"
+                    },
+                    text1: {
+                        required: "请输入内容",
+                        minlength: "请输入少于15个字符"
+                    },
+                    startTime: {
+                        required: "请输入活动开始日期"
+                    },
+                    endTime: {
+                        required: "请输入活动结束日期"
+                    },
+                    imageFile: {
+                        required: "请上传图片"
+                    }
+                }
+            }
+        );
+    });
+    
+    $(function(){
+		$(".file-drop-zone-title").text("拖拽海报到此 建议为竖版海报！");
+	})
+</script>
+
+</body>
+</html>

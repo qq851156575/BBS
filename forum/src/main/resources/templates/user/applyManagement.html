@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="css/style.css" th:href="@{/css/style.css}">
+<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"	th:src="@{/js/jquery-3.3.1.min.js}"></script>
+		<script th:inline="javascript">
+				$(function(){
+					$(".two").css("background-image", "url('[(@{/images/user/backgrand.jpg})]')");
+				});
+		</script>
+		<script th:inline="javascript">
+				window.onload=function(){
+					var classify = [[${session.apply_classify}]];
+					var indx = parseInt(classify);
+					$(".manage_title").find("li").eq(indx-1).css("border-bottom","3px solid #08aba6");
+				}
+		</script>
+</head>
+<body class="back">
+	<div class="two_cover" style="height: 500px;"></div>
+	<div class="two" style="height: 500px;" th:insert="@{base/header} :: html"></div>
+	<div class="setting">
+		<div class="setting_left">
+			<ul>
+				<li><a th:href="@{/manage/postManagement?classify=1}">贴子管理</a></li>
+				<li><a th:href="@{/manage/reviewManagement?classify=1}">评论管理</a></li>
+				<li><a th:href="@{/manage/resourceManagement?classify=1}">资源管理</a></li>
+				<li sec:authorize="hasAuthority('ADMIN')"><a th:href="@{/manage/applyManagement?classify=1}">请求管理</a></li>
+			</ul>
+		</div>
+		<div class="setting_right">
+			<div class="manage_title">
+				<ul>
+					<li><a th:href="@{/manage/applyManagement?classify=1}">未处理</a></li>
+					<li><a th:href="@{/manage/applyManagement?classify=2}">已处理</a></li>
+				</ul>
+			</div>
+			<div class="manage_content">
+				<div class="comments_received" th:each="data:${page.result}">
+					<div class="comments_received_details">
+						<p style="height: 90px;overflow: auto;text-overflow: inherit;" th:text="${data.applicationContent}"></p>
+						<em th:text="${data.createBy.userName}"></em><span>	&nbsp;申请&nbsp;</span><em th:text="${#DictUtils.getDictLabel(data.applicationPlate,'post_category','')}"></em><span>	&nbsp;吧主</span>
+					</div>
+					<div class="comments_received_times">
+						<span th:text="${#dates.format(data.applicationTime,'yy-MM-dd HH:mm')}">13-9-18 15:20</span>
+						<a th:href="@{/manage/dispose(id=${data.id},dispose=0)}" th:if="${data.result eq '0'}">通过</a>
+						<a th:href="@{/manage/dispose(id=${data.id},dispose=1)}" th:if="${data.result eq '0'}">驳回</a>
+						<h3 style="color: green;
+						     opacity: 0.3;
+						    font-size: 28px;
+						    text-align: center;" th:if="${data.result eq '1'}">通过</h3>
+						<h3  style="color: red;
+						     opacity: 0.3;
+						    font-size: 28px;
+						    text-align: center;"th:if="${data.result eq '2'}">驳回</h3>
+					</div>
+				</div>
+			</div>
+			<div th:replace="@{base/paging} :: html" ></div>
+		</div>
+	</div>
+	<div th:replace="@{base/footer} :: html"></div>
+</body>
+</html>

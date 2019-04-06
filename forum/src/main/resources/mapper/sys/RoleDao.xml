@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.piu.sys.dao.RoleDao">
+	
+	
+	<select id="get" resultType="com.piu.sys.entity.Role">
+		select  r_id as id,
+				r_en_name as enName 
+		from sys_role where id =#{id} or role_id =#{roleId}
+	</select>
+	
+	<select id="byName" resultType="com.piu.sys.entity.Role">
+		select  r_id as id,
+				r_en_name as enName 
+				from sys_role where r_en_name =#{enName} 
+	</select>
+	
+	<insert id="insert">
+		insert into sys_user_role 
+		( 
+			user_id,
+			role_id,
+			plate
+		)values(
+			#{userId},
+			#{roleId},
+			#{plate}
+		)
+	</insert>
+	
+	
+	<delete id="delete">
+		delete from sys_user_role where user_id = #{userId} and role_id =#{roleId}
+	</delete>
+	
+</mapper>

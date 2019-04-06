@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta charset="utf-8">
+<link type="text/css" rel="stylesheet" href="css/style.css"
+	th:href="@{/swiper/css/style.css}">
+<script
+	src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"
+	th:src="@{/js/jquery-3.3.1.min.js}"></script>
+	<script th:inline="javascript">
+		$(function(){
+			$(".two").css("background-image", "url('[(@{/images/download/backgrand.jpg})]')");
+		});
+	</script>
+
+</head>
+<script th:inline="javascript">
+    function formSubmit(){
+		var form = document.getElementById('search');
+        form.submit();
+    }
+</script>
+<body>
+	<div class="two_cover" style="height: 400px;">
+		<div style="margin: 230px 35% 0px;">
+			<form th:action="@{/download/list}"  th:method="post" id="search">
+			<input name="title" th:value="*{download.title}" placeholder="搜索相关软件" ></input>
+			<img onclick="formSubmit()" th:src="@{/images/download/search.png}">
+			</form>
+    	</div>
+	</div>
+	<div class="two" style="height: 400px;" th:insert="@{base/header} :: html"></div>
+	<section class="download_body">
+		<!-- <h2></h2> -->
+		<div class="download_body_upload">
+			<a sec:authorize="isAuthenticated()" class="shade" th:href="@{/download/form}">上传资源</a>
+			<a sec:authorize="!isAuthenticated()" data-toggle="modal" data-target="#SignIn" class="shade" th:href="@{/download/form}">上传资源</a>
+		</div>
+		<ul >
+			<li th:each="data:${page.result}">
+				<a th:href="@{/download/details(id=${data.id})}" th:title="${data.title}">
+					<div class="download_chunk">
+						<img  src="" th:src="@{/images/download/zip.png}">
+						<h3 th:text="${data.title}">Chrome浏览器</h3>
+						<p th:text="${data.introduce}" style="border:#ccc;overflow: hidden; display: -webkit-box;-webkit-line-clamp: 2;-webkit-box-orient: vertical;">适用于windows的免费应用，由Google提供</p>
+					</div>
+					<div class="download_chunk_footer">
+						<span>下载量</span>
+						<span th:text="${data.amountOfDownloads}">8分</span>
+					</div>
+				</a>
+			</li>
+			
+		</ul>
+	</section>
+	<div th:replace="@{base/paging} :: html" ></div>
+
+	<!-- <div th:replace="@{base/paging} :: html" ></div> -->
+	<div th:insert="@{base/footer} :: html"></div>
+</body>
+</html>

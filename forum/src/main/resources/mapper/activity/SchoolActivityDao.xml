@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.piu.activity.dao.SchoolActivityDao">
+	<resultMap id="activityMap" type="com.piu.activity.entity.SchoolActivity">
+		<id property="id" column="id"/>
+		<result property="hot" column="hot"/>
+		<result property="content" column="content"/>
+		<result property="status" column="status"/>
+		<result property="type" column="type"/>
+		<result property="startTime" column="start_time"/>
+		<result property="endTime" column="end_time"/>
+		<result property="title" column="title"/>
+		<result property="postTime" column="post_time"/>
+		<result property="posterPath" column="poster_path"/>
+		<association property="user" javaType="com.piu.sys.entity.User">
+			<id property="id" column="user_id"/>
+			<result property="userName" column="user_name"/>
+		</association>
+		<collection property="attachments" ofType="com.piu.activity.entity.Attachment">
+				<result property="activityId" column="id"/>
+				<result property="path" column="attachment_path"/>
+		</collection>
+	</resultMap>
+
+	
+	<select id="get" resultType="com.piu.activity.entity.SchoolActivity">
+		SELECT
+			a.*,
+			u.user_name as "user.userName",
+			u.id as "user.id"
+			FROM
+			activity a
+			LEFT JOIN sys_user u  on a.user_id = u.id
+		WHERE a.id =#{id}
+	</select>
+	<select id="findList" resultMap="activityMap">
+		SELECT
+			a.*,
+			u.*
+			FROM
+			activity a
+			LEFT JOIN sys_user u  on a.user_id = u.id
+			WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+	</select>
+
+	<select id="findLast" resultType="com.piu.activity.entity.SchoolActivity">
+		SELECT
+			a.*,
+			u.*
+			FROM
+			activity a
+
+			LEFT JOIN sys_user u  on a.user_id = u.id
+			WHERE a.del_flag = #{DEL_FLAG_NORMAL}
+			ORDER BY post_time desc
+	</select>
+	 <insert id="insert">
+		INSERT INTO activity(
+		id,
+		user_id,
+		hot,
+		content,
+		status,
+		type,
+		title,
+		start_time,
+		end_time,
+		post_time,
+		poster_path,
+		del_flag,
+		create_by,
+		create_date,
+		update_by,
+		update_date
+		)VALUES(
+		#{id},
+		#{user.id},
+		#{hot},
+		#{content},
+		#{status},
+		#{type},
+		#{title},
+		#{startTime},
+		#{endTime},
+		#{postTime},
+		#{posterPath},
+		#{delFlag},
+		#{createBy.id},
+		#{createDate},
+		#{updateBy.id},
+		#{updateDate}
+		)
+	</insert>
+	<!--<update id="update">
+		update exchange_of_learning set
+		hot=#{hot},
+		content=#{content},
+		status=#{status},
+		type=#{type},
+		title=#{title},
+		posting_time=#{postingTime},
+		update_by=#{updateBy.id},
+		update_date=#{updateDate}
+		where  id =#{id}
+	</update>
+	<update id="delete">
+		UPDATE exchange_of_learning SET
+		del_flag =
+		#{DEL_FLAG_DELETE}
+		WHERE
+		id = #{id}
+	</update>  -->
+
+	<update id="delete">
+		UPDATE activity SET
+		del_flag =
+		#{DEL_FLAG_DELETE}
+		WHERE
+		id = #{id}
+	</update>
+
+	<update id="audit">
+		UPDATE activity SET
+		del_flag =
+		#{DEL_FLAG_AUDIT}
+		WHERE
+		id = #{id}
+	</update>
+</mapper>

@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.piu.communion.dao.ExchangeOfLearningReplyDao">
+    <sql id="exchangeOfLearningReplyColumns">
+        e.id,
+        e.exchange_of_learning_id as "exchangeOfLearning.id",
+        e.user_id as "user.id",
+        e.reply_content,
+        e.reply_date,
+        e.superior_reply,
+        e.del_flag,
+        e.create_by AS "createBy.id",
+        e.create_date,
+        e.update_by as "updateBy.id",
+        e.update_date,
+        u.user_name as "user.userName",
+        u.img as "user.img"
+    </sql>
+
+
+    <select id="get" resultType="com.piu.communion.entity.ExchangeOfLearningReply">
+        SELECT
+        <include refid="exchangeOfLearningReplyColumns"></include>
+        FROM exchange_of_learning_reply e
+        LEFT JOIN sys_user u ON u.id = e.user_id
+        WHERE e.id =#{id}
+    </select>
+    <select id="findByPostId" resultType="com.piu.communion.entity.ExchangeOfLearningReply">
+        SELECT
+        <include refid="exchangeOfLearningReplyColumns"></include>
+
+        FROM exchange_of_learning_reply e
+        LEFT JOIN sys_user u ON u.id = e.user_id
+        WHERE e.exchange_of_learning_id =#{exchangeOfLearning.id}
+        ORDER BY e.reply_date
+    </select>
+    <select id="findList" resultType="com.piu.communion.entity.ExchangeOfLearningReply">
+        SELECT
+        <include refid="exchangeOfLearningReplyColumns"></include>
+        FROM exchange_of_learning_reply e
+        LEFT JOIN sys_user u ON u.id = e.reply_person_id
+        WHERE e.exchange_of_learning_id =#{exchangeOfLearning.id} and e.del_flag = #{DEL_FLAG_NORMAL}
+        ORDER BY e.reply_date
+    </select>
+    <insert id="insert">
+        INSERT INTO exchange_of_learning_reply
+            (
+             id,
+             exchange_of_learning_id,
+             user_id,
+             reply_content,
+             reply_date,
+             superior_reply,
+             superior_reply_user_id,
+             del_flag,
+             create_by,
+             create_date,
+             update_by,
+             update_date
+                )
+        VALUES(
+               #{id},
+               #{exchangeOfLearning.id},
+               #{user.id},
+               #{replyContent},
+               #{replyDate},
+               #{superiorReply},
+               #{superiorUser.id},
+               #{delFlag},
+               #{createBy.id},
+               #{createDate},
+               #{updateBy.id},
+               #{updateDate}
+                  )
+    </insert>
+
+
+    <update id="delete">
+        UPDATE exchange_of_learning_reply
+        SET
+            del_flag =
+                #{DEL_FLAG_DELETE}
+        WHERE
+            id = #{id}
+    </update>
+
+    <update id="audit">
+		UPDATE exchange_of_learning_reply SET
+		del_flag =
+		#{DEL_FLAG_AUDIT}
+		WHERE
+		id = #{id}
+	</update>
+</mapper>

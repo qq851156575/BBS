@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta charset="utf-8">
+<title>活动</title>
+<link type="text/css" rel="stylesheet" href="css/style.css" th:href="@{/swiper/css/style.css}">
+<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js" th:src="@{/js/jquery-3.3.1.min.js}"></script>
+</head>
+<script type="text/javascript" src="js/swiper.min.js" th:src="@{/swiper/js/swiper.min.js}"></script>
+	<script type="text/javascript">
+		window.onload = function() {
+			var swiper = new Swiper('.swiper-container', {
+				width: 500,
+				/* direction: 'vertical',
+				height: 1000, */
+				autoHeight: true,
+				autoplay : 2000,
+				speed : 1000,
+				autoplayDisableOnInteraction : true,
+				loop : true,
+				/* centeredSlides : true, */
+				pagination : '.swiper-pagination',
+				paginationClickable : true,
+				prevButton : '.swiper-button-prev',
+				nextButton : '.swiper-button-next',
+				/* onInit : function(swiper) {
+					swiper.slides[2].className = "swiper-slide swiper-slide-active";
+				}, */
+				effect : 'fade',
+				lazyLoading : true,
+				lazyLoadingOnTransitionStart : true,
+			});
+			
+		}
+</script>
+<script th:inline="javascript">
+	$(function(){
+		$(".activity_head").css("background-image", "url('[(@{/images/activity/backgrand.jpg})]')");
+	});
+</script>
+<body>
+	<div class="two_cover" style="height: 1300px;"></div>
+	<div th:insert="@{base/header} :: html"></div>
+	<section  class="pc-banner activity_head">
+		<div class="swiper-container" style="margin-top: 200px;">
+			<div class="swiper-wrapper" style="margin: auto;width: 500px;">
+				<div th:each="data,dataStat:${list}" class="swiper-slide" th:classappend="${dataStat.count eq '1'}? 'swiper-slide-center none-effect':''">
+					<a th:href="@{/schoolActivity/details(id=${data.id})}"> <img th:src="${data.posterPath}">
+					</a>
+				</div>
+				<!-- div class="swiper-slide swiper-slide-center none-effect">
+					<a href="#"> <img th:src="@{/swiper/img/banner001.jpg}">
+					</a>
+				</div> -->
+				<!--<div class="swiper-slide">
+					<a href="#"> <img th:src="@{/swiper/img/banner003.jpg}">
+					</a>
+				</div>
+				-->
+			</div>
+			<div class="">
+				<div class="swiper-button-prev"></div>
+				<div class="swiper-button-next"></div>
+			</div>
+		</div>
+		<div class="swiper_foot">
+					<a th:href="@{/schoolActivity/list}">全部活动</a>
+		</div>
+	</section>
+	</div>
+	<div  th:insert="@{base/footer} :: html"></div>
+</body>
+</html>

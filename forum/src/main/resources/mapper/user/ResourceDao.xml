@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.piu.sys.dao.ResourceDao">
+	<sql id="resource">
+		a.id,
+		a.title as fileName,
+		a.introduce as summary,
+		a.upload_date as uploadDate
+	</sql>
+	
+	<select id="findResourceList" resultType="com.piu.sys.entity.Resource">
+		select 
+		<include refid="resource"></include>
+		FROM  download a WHERE a.user_id = #{userId} AND a.del_flag=#{delFlag}
+	</select>
+	
+
+</mapper>

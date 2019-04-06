@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.piu.sys.dao.PostAndReplyDao">
+	
+	<select id="findPostList" resultType="com.piu.sys.entity.PostAndReply">
+		SELECT
+			id,
+			title,
+			time,
+		  	plate as category
+		FROM
+			manage_post
+		WHERE user_id=#{userId} and del_flag =#{delFlag}
+		ORDER BY time DESC
+	</select>
+	<select id="findReplyToOthersList" resultType="com.piu.sys.entity.PostAndReply">
+		SELECT
+			id,
+			title,
+			time,
+		  	reply,
+		  	plate as category
+		FROM
+		manage_reply_to_others
+		WHERE user_id=#{userId} and del_flag =#{delFlag}
+		ORDER BY time DESC
+	</select>
+	<select id="findOthersReplyToMeList" resultType="com.piu.sys.entity.PostAndReply">
+		SELECT
+			id,
+			title,
+			critic,
+			time,
+		  	reply,
+		  	plate as category
+		FROM
+		manage_others_reply_to_me
+		WHERE superior_reply_user_id=#{userId} and del_flag =#{delFlag}
+		ORDER BY time DESC
+	</select>
+	
+</mapper>

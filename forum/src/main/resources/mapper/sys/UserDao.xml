@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.piu.sys.dao.UserDao">
+ 	<resultMap id="userMap" type="com.piu.sys.entity.User">
+        <id property="id" column="id"/>
+        <result property="userName" column="user_name"/>
+        <result property="password" column="password"/>
+        <result property="phone" column="phone"/>
+        <result property="mail" column="mail"/>
+        <result property="birthday" column="birthday"/>
+        <result property="dateOfAdmission" column="date_of_admission"/>
+        <result property="img" column="img"/>
+        <result property="delFlag" column="del_flag"/>
+        <collection property="roles" resultMap="roleMap">
+        </collection>
+    </resultMap>
+    <resultMap type="com.piu.sys.entity.Role" id="roleMap">
+        <result property="plate" column="plate"/>
+        <result property="roleId" column="r_id"/>
+        <result property="enName" column="r_en_name"/>
+        <result property="cnName" column="r_cn_name"/>
+    </resultMap>
+    
+    
+     <select id="findByUserName" parameterType="String" resultMap="userMap">
+        SELECT
+			u.*,
+			r.*,
+			s.plate
+		FROM
+			sys_user u
+		LEFT JOIN sys_user_role s ON u.id = s.user_id
+		LEFT JOIN Sys_Role r ON s.role_id = r.r_id
+		WHERE u.user_name=#{userName} and u.del_flag='0'
+      </select>
+      
+ 	 <select id="findList" parameterType="com.piu.sys.entity.User" resultMap="userMap">
+        SELECT
+			u.*,
+			r.*,
+			s.plate
+		FROM
+			sys_user u
+		LEFT JOIN sys_user_role s ON u.id = s.user_id
+		LEFT JOIN Sys_Role r ON s.role_id = r.r_id
+		WHERE u.del_flag  = #{delFlag}
+		<if test="userName != '' and userName != null">
+			and u.user_name = #{userName}
+		</if>
+      </select>
+ 	
+ 	
+    <select id="get"  resultType="com.piu.sys.entity.User">
+        SELECT * FROM sys_user WHERE id =#{id} or mail = #{mail} or user_name=#{userName}
+    </select>
+    
+    <insert id="insert">
+	insert into sys_user (
+	id,
+	user_name,
+	password,
+	phone,
+	mail,
+	birthday,
+	date_of_admission,
+	img
+	)values(
+	#{id},
+	#{userName},
+	#{password},
+	#{phone},
+	#{mail},
+	#{birthday},
+	#{dateOfAdmission},
+	#{img}
+	)
+    </insert>
+    
+    <update id="update">
+    	update sys_user set
+    	user_name = #{userName},
+    	password = #{password},
+    	phone = #{phone},
+    	mail = #{mail},
+    	birthday = #{birthday},
+    	date_of_admission = #{dateOfAdmission},
+    	img = #{img},
+    	del_flag = #{delFlag}
+    	where id = #{id}
+    </update>
+
+</mapper>

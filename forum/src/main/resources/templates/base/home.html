@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org"
+       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <meta charset="UTF-8">
+    <title>首页</title>
+    <link rel="stylesheet" href="css/style.css" th:href="@{/css/style.css}">
+</head>
+<body class="back">
+
+<div class="one" th:insert="@{base/header} :: html">
+    <div style="height: auto;" class="width-1024">
+        <div class="hua width-1024" style="opacity:1;">
+            <p class="width-1024">Revolutionising Waste - We Recycle 93% </p>
+            <p class="fu" style="width: 300px">Be Responsible </p>
+            <div class="dowA">Download the App</div>
+        </div>
+        <div class="hua width-1024">
+            <p class="width-1024">24 Hour waste removal</p>
+            <p class="fu" style="width: 500px">YOU CLICK. WE COLLECT</p>
+            <div class="dowA">Download the App</div>
+        </div>
+    </div>
+</div>
+
+<div th:replace="@{base/footer} :: html"></div>
+
+</body>
+<script>
+    var div=document.querySelectorAll(".hua");
+    var index=0;
+    var play=null;
+    function show(a) {
+        for(let i=0;i<div.length;i++){
+            div[i].style.opacity=0;
+            div[a].style.opacity=1;
+        }
+    }
+    
+    function autoPlay() {
+        play=setInterval(function () {
+            index++;
+            if(index>1){
+                index=0;
+
+            }
+            show(index)
+        },2000)
+    }
+    autoPlay()
+</script>
+</html>

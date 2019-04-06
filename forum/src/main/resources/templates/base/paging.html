@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org"
+       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+  <head>
+    <meta name="content-type" content="text/html; charset=UTF-8">
+    <!-- <link th:href="@{/asserts/css/bootstrap.min.css}" rel="stylesheet"> -->
+    <link th:href="@{/css/jqPaginator.css}" rel="stylesheet">
+	<script type="text/javascript" th:src="@{/js/jquery-3.3.1.min.js}"></script>
+	<script type="text/javascript" th:src="@{/js/jqPaginator.js}"></script>
+	<script th:inline="javascript">
+		var firstEvent = true; 
+		$(function () {
+        $("#page").jqPaginator({
+            totalPages: [[${page.pages}]],
+            visiblePages: [[${page.pageSize}]],
+            currentPage: [[${page.pageNum}]],
+            first: '<li class="first"><a href="javascript:void(0);">First<\/a><\/li>',
+            prev: '<li class="prev"><a href="javascript:void(0);">Previous<\/a><\/li>',
+            next: '<li class="next"><a href="javascript:void(0);">Next<\/a><\/li>',
+            last: '<li class="last"><a href="javascript:void(0);">Last<\/a><\/li>',
+            page: '<li class="page"><a href="javascript:void(0);">{{page}}<\/a><\/li>',
+            onPageChange: function (num, type) {
+                if(firstEvent){
+                	firstEvent = false;
+                }else{
+                	var path = window.location.href.substring(0, window.location.href.indexOf("?"));
+                	window.location.href=path+"?pageNum="+num
+                }
+            }
+        });
+     })
+	</script>
+  </head>
+  	
+    <div class="jqpaginator" style="margin: 50px 0px">
+      <ul class="pagination" id="page"></ul>
+    </div>
+  </body>
+</html>

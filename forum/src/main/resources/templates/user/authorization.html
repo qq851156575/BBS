@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="css/style.css" th:href="@{/css/style.css}">
+<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"	th:src="@{/js/jquery-3.3.1.min.js}"></script>
+<script th:inline="javascript">
+				$(function(){
+					$(".two").css("background-image", "url('[(@{/images/user/backgrand.jpg})]')");
+				});
+</script>
+<script type="text/javascript">
+	function updateDF(obj){
+		var delflag = obj.find("option:selected").val();
+		var username = obj.attr("username");
+		$.ajax({
+			url : "[(@{/manage/saveUser})]",
+			async : "fasle",
+			type : "post",
+			data : "delflag="+delflag+"&username="+username,
+			success : function(){
+				alert("成功更改！");
+			},
+			error : function(){
+				alert("更改失败！");
+			}
+		})
+	}
+</script>
+</head>
+<body class="back">
+	<div class="two_cover" style="height: 500px;"></div>
+	<div class="two" style="height: 500px;" th:insert="@{base/header} :: html"></div>
+	<div class="setting">
+		<div class="authorization">
+			<div class="authorization_title">
+				<form th:action="@{/manage/authorization}" th:method="post" th:object="${user}">
+					<input name="userName" th:value="*{userName}"  placeholder="用户名"/>
+					<select th:name="delFlag">
+						<option selected="selected" disabled="disabled"  style='display: none' value=''>用户状态</option> 
+						<option th:each="data:${#DictUtils.getDictList('user_status')}"  th:value="${data.value}" th:text="${data.label}"></option>
+					</select>
+					<button type="submit">submit</button>
+				</form>
+			</div>
+			<div class="authorization_content">
+				<form action="">
+					<table>
+						<thead>
+							<tr>
+								<th>序号</th>
+								<th>板块</th>
+								<th>用户名</th>
+								<th>用户级别</th>
+								<th>用户状态</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="data,dataStat:${page.result}">
+								<td th:text="${dataStat.count}">1</td>
+								<td>
+								<span th:each="plate:${data.roles}" th:text="${#DictUtils.getDictLabel(plate.plate,'post_category','')}"></span>
+								</td>
+								<td th:text="${data.userName}"></td>
+								<td>
+									<span style="margin: 0px 5px" th:each="level:${data.roles}" th:text="${#DictUtils.getDictLabel(level.roleId,'user_level','')}"></span> 
+								</td>
+								<td>
+								<select th:name="${data.delFlag}" th:attr="username=${data.userName}" onchange="updateDF($(this))">
+									<option th:each="stat:${#DictUtils.getDictList('user_status')}"  th:selected="${data.delFlag eq stat.value}"  th:value="${stat.value}" th:text="${stat.label}"></option>
+								</select>
+								</td>
+							</tr>
+						</tbody>
+					
+					</table>
+				
+				</form>
+			</div>
+			<div th:replace="@{base/paging} :: html" ></div>
+		</div>
+	</div>
+	<div th:replace="@{base/footer} :: html"></div>
+</body>
+</html>

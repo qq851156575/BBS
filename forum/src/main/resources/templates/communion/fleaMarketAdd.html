@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="zh"  xmlns:th="http://www.thymeleaf.org"
+       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <meta charset="UTF-8">
+    <title>论坛</title>
+    <script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js" th:src="@{/js/jquery-3.3.1.min.js}"></script>
+
+	<link rel="stylesheet" href="" th:href="@{/css/fileinput.min.css}"><link>
+	<link rel="stylesheet" th:href="@{/css/upload.css}">
+	<script th:src="@{/bootstrap-4.1.3-dist/js/bootstrap.js}"></script>
+	<script th:src="@{/js/fileinput.js}"></script>
+	<script th:src="@{/js/zh.js}"></script>
+	<script th:src="@{/js/piexif.js}"></script>
+	<script th:src="@{/js/purify.js}"></script>
+	<script th:src="@{/js/sortable.js}"></script>
+	<script th:src="@{/js/theme.js}"></script>
+	<link rel="stylesheet" type="text/css" th:href="@{/css/wangEditor-fullscreen-plugin.css}"/>
+</head>
+<script th:inline="javascript">
+	$(function(){
+		$(".two").css("background-image", "url('[(@{/images/forumCategory/backgrand.jpg})]')");
+	});
+</script>
+<script th:inline="javascript">
+    function upload(){
+        $("#uploadButton").css("display","none");
+        $("#upload").css("display","");
+    };
+
+    function uploadNo(){
+        var bt = document.getElementsByClassName("btn btn-default btn-secondary fileinput-remove fileinput-remove-button");
+        bt[0].click();
+        $("#uploadButton").css("display","");
+        $("#upload").css("display","none");
+    };
+    function loadFile(file){
+        $("#fileName").val(file.name);
+    }
+
+
+</script>
+<body>
+<div class="two_cover">
+	<h1>Publish</h1>
+</div>
+<div class="two category" th:insert="@{base/header} :: html"></div>
+<div class="forum-publish">
+	<div class="forum-publish-user">
+		<h1>发表帖子</h1>
+		<img alt="" src="" th:src="${currentUser.img}">
+		<span th:text="${currentUser.userName}"></span>
+	</div>
+	<div class="forum-publish-content">
+
+		<form id="fleaMarketForm" class="form-signin" th:action="@{/fleaMarket/save}" th:method="post" enctype="multipart/form-data">
+           <div class="field froum_field">
+			<label>标题</label><br>
+			<input id="title" name="title" th:value="*{fleaMarket.title}">
+            <span>请输入5-40个字符</span>
+		   </div>
+			
+
+			<br>
+			<div id="div1">
+
+
+			</div>
+			<div style="display:none">
+				<textarea id="text1" style="width:100%; height:200px;"  name="content" th:value="*{fleaMarket.content}"></textarea>
+			</div>
+			<div><button type="button" class="shade" id="uploadButton" onclick="upload()" style="display: block">上传附件</button></div>
+			<div id="upload" style="display: none">
+				<div class="field" style="padding-right: 20px;margin: 20px auto;height: auto;">
+					<label>资源上传：</label> <br />
+					<div style="width: 330px;max-width: 570px;">
+						<input id="file-zh" name="file" type="file" class="file" data-language="zh"
+							   data-allowed-file-extensions='["rar","zip"]' data-max-file-size="20480" data-show-upload="false"
+							   data-show-cancel="false" data-allowed-preview-types="null" onchange="loadFile(this.files[0])">
+					</div>
+				</div>
+
+				<div class="field">
+					<label>文件名：</label> <br /> <input id="fileName" type="text" name="download.title" th:value="*{fleaMarket.download.title}" />
+				</div>
+                <div class="field">
+                    <label>收费：</label> <br /> <select th:switch="*{fleaMarket.download.cost}" name="cost">
+                    <option th:each="data:${#DictUtils.getDictList('cost')}" th:value="${data.value}" th:text="${data.label}">免费</option>
+
+                </select>
+                </div>
+                <div class="field">
+                    <label>语言：</label> <br /> <select th:switch="*{fleaMarket.download.language}" name="language">
+                    <option th:each="data:${#DictUtils.getDictList('download_language')}" th:value="${data.value}" th:text="${data.label}">简体中文</option>
+                </select>
+                </div>
+                <div class="field">
+                    <label>适用于：</label> <br /> <select th:switch="*{fleaMarket.download.system}" name="system">
+                    <option th:each="data:${#DictUtils.getDictList('system')}" th:value="${data.value}" th:text="${data.label}">Windows</option>
+                </select>
+                </div>
+				<div class="field">
+					<label>版本号：</label> <br /> <input type="text"  name="version" th:value="*{fleaMarket.download.version}"/>
+				</div>
+
+				<div class="field">
+					<label>说明</label> <br />
+
+					<textarea   style="color: black;"  name="introduce" th:value="*{fleaMarket.download.introduce}"></textarea>
+				</div>
+
+				<div class="field" style="padding-right: 20px;margin: 20px auto;height: auto;">
+					<label>资源截图上传：</label> <br />
+					<div style="width: 570px;">
+						<input name="imageFile" type="file" multiple class="file" data-allowed-file-extensions='["jpg","png"]' data-max-file-size="2048"
+							   data-show-upload="false" data-show-cancel="false" data-language="zh">
+					</div>
+				</div>
+				<div><button type="button" class="shade"  onclick="uploadNo()">取消附件上传</button></div>
+			</div>
+
+
+			<button class="shade" type="submit">发表帖子</button>
+		</form>
+	</div>
+</div>
+<div th:insert="@{base/footer} :: html"></div>
+
+<script type="text/javascript" th:src="@{/js/wangEditor.min.js}"></script>
+<script type="text/javascript" th:src="@{/js/wangEditor-fullscreen-plugin.js}"></script>
+<script type="text/javascript" th:inline="javascript">
+    var E = window.wangEditor
+    var editor = new E('#div1')
+    var $text1 = $('#text1')
+
+    editor.customConfig.onchange = function (html) {
+        // 监控变化，同步更新到 textarea
+        $text1.val(html)
+    }
+    editor.customConfig.uploadImgServer ='[(@{/uploadImg})]'
+
+    /* 定义上传图片的默认名字 */
+    editor.customConfig.debug = location.href.indexOf('wangeditor_debug_mode=1') > 0
+    editor.customConfig.uploadImgTimeout = 300000
+    editor.customConfig.uploadFileName = 'myFileName'
+    editor.create()
+
+    // 初始化 textarea 的值
+    E.fullscreen.init('#div1');
+    editor.txt.html([[${fleaMarket.content}]])
+    $text1.val(editor.txt.html())
+</script>
+
+<script th:src="@{/jquery-validation-1.19.0/dist/jquery.validate.min.js}"></script>
+<script th:src="@{/jquery-validation-1.19.0/dist/localization/messages_zh.js}"></script>
+<script th:inline="javascript">
+    $(function(){
+        // 在键盘按下并释放及提交后验证提交表单
+        $("#fleaMarketForm").validate({
+                rules: {
+                    title: {
+                        required: true,
+                        minlength: 5,
+                        maxlength: 40
+                    }
+                },
+                errorElement: "em",
+                messages: {
+                    title: {
+                        required: "请输入标题",
+                        minlength: "请输入至少5个字符",
+                        maxlength: "请输入少于40个字符"
+                    }
+                }
+            }
+        );
+    });
+</script>
+</body>
+</html>

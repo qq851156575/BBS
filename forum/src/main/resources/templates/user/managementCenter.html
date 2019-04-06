@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="css/style.css" th:href="@{/css/style.css}">
+<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"	th:src="@{/js/jquery-3.3.1.min.js}"></script>
+<script th:inline="javascript">
+		$(function(){
+			$(".two").css("background-image", "url('[(@{/images/user/backgrand.jpg})]')");
+		});
+</script>
+</head>
+<body class="back">
+	<div class="two_cover" style="height: 500px;"></div>
+	<div class="two" style="height: 500px;" th:insert="@{base/header} :: html"></div>
+	<div class="setting">
+		<div class="setting_left">
+			<ul>
+				<li>贴子管理</li>
+				<li>评论管理</li>
+			</ul>
+		</div>
+		<div class="setting_right">
+			<div class="manage_title">
+				<ul>
+					<li>收到的评论</li>
+					<li>发表的评论</li>
+				</ul>
+			</div>
+			<div class="manage_content">
+				<div class="comments_received">
+					<div class="comments_received_details">
+						<p>匿名用户：用来测试评论用来测试评论用来测试评论用来测试评论用来测试评论</p>
+						<span>来自：</span><em>"这里是帖子名称"</em>
+					</div>
+					<div class="comments_received_times">
+						<span>13-9-18 15:20</span>
+						<a href="">回复</a>
+					</div>
+				</div>
+				<div class="comments_received">
+					<div class="comments_received_details">
+						<p>匿名用户：用来测试评论用来测试评论用来测试评论用来测试评论用来测试评论</p>
+						<span>来自：</span><em>"这里是帖子名称"</em>
+					</div>
+					<div class="comments_received_times">
+						<span>13-9-18 15:20</span>
+						<a href="">回复</a>
+					</div>
+				</div>
+				<div class="comments_received">
+					<div class="comments_received_details">
+						<p>匿名用户：用来测试评论用来测试评论用来测试评论用来测试评论用来测试评论</p>
+						<span>来自：</span><em>"这里是帖子名称"</em>
+					</div>
+					<div class="comments_received_times">
+						<span>13-9-18 15:20</span>
+						<a href="">回复</a>
+					</div>
+				</div>
+				<div class="comments_received">
+					<div class="comments_received_details">
+						<p>匿名用户：用来测试评论用来测试评论用来测试评论用来测试评论用来测试评论</p>
+						<span>来自：</span><em>"这里是帖子名称"</em>
+					</div>
+					<div class="comments_received_times">
+						<span>13-9-18 15:20</span>
+						<a href="">回复</a>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div th:replace="@{base/footer} :: html"></div>
+</body>
+</html>

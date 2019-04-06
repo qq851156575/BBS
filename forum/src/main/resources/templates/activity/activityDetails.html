@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="zh"  xmlns:th="http://www.thymeleaf.org"
+       xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+    <meta charset="UTF-8">
+    </head>
+<body >
+<div class="two_cover">
+	<h1>Discuss</h1>
+
+</div>
+
+<div class="two category" th:insert="@{base/header} :: html"></div>
+<div class="forum-header">
+    <a sec:authorize="isAuthenticated()" th:if="${schoolActivity.user.id} eq ${currentUser.id}" class="shade" th:href="@{/schoolActivity/form(id=${schoolActivity.id})}">编辑</a>
+    <a sec:authorize="isAuthenticated()" th:if="${schoolActivity.user.id} eq ${currentUser.id}" class="shade" th:href="@{/schoolActivity/delete(id=${schoolActivity.id})}">删除</a>
+    <a sec:authorize="hasAnyAuthority('ADMIN')"th:if="not ${schoolActivity.user.id} eq  ${currentUser.id}" class="shade" th:href="@{/schoolActivity/audit(id=${schoolActivity.id})}">删除</a>
+</div>
+	<div class="forum" style="display: inline-flex;">
+    <div style="width: 75%">
+        <article style="margin: 10px 0">
+            <h2 style="color: #08aba6;font-size: 20px;line-height: normal;" th:text="${schoolActivity.title}">Prolific fly-tipper caught on CCTV Enfield</h2>
+
+            <div><span th:text="${schoolActivity.user.userName}"></span><span>  发表于 </span> <span th:text="${#dates.format(schoolActivity.postTime,'yyyy年MM月dd日')}"></span></div>
+
+         <br>
+            <img th:src="${schoolActivity.getPosterPath()}">
+            <p  th:utext="${schoolActivity.content}">“However, the DVLA has no details of the vehicle, its owner or insurance related to the truck.”
+                Enfield council mounted a new CCTV camera at Long Hall Lane which caught Jason seven times on film between March and May fly-tipping between the hours of 8pm and 10pm.</p>
+        </article>
+    </div>
+   <div style="width: 25%">
+        <!--<aside style="padding-left: 30px">
+            <h3 >Recent Comments</h3>
+            <ul style="list-style: none;padding: 0;color: #767676;">
+                <li>   Mr WordPress on Guidance given to chose wisely who disposes of your waste</li>
+            </ul>
+        </aside>-->
+
+       <aside style="padding-left: 60px;padding-top: 50px">
+            <h3>活动时间</h3>
+            <ul style="list-style: none;padding: 0;color: #767676;">
+                <li th:text="${#dates.format(schoolActivity.startTime,'yyyy年MM月dd日')}">July 2017</li>
+                <li th:text="${#dates.format(schoolActivity.endTime,'yyyy年MM月dd日')}">June 2017</li>
+            </ul>
+        </aside>
+    </div>
+</div>
+<div>
+
+</div>
+
+<div th:insert="@{base/footer} :: html"></div>
+
+</body>
+</html>

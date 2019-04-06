@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh" xmlns:th="http://www.thymeleaf.org"
+	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4">
+<head>
+<meta charset="utf-8">
+	<link type="text/css" rel="stylesheet" href="css/style.css" th:href="@{/swiper/css/swiper.min.css}">
+	<script src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"	th:src="@{/js/jquery-3.3.1.min.js}"></script>
+	<script type="text/javascript" src="js/swiper.min.js" th:src="@{/swiper/js/swiper.min.js}"></script>
+	<script th:inline="javascript">
+		$(function(){
+			$(".two").css("background-image", "url('[(@{/images/download/backgrand.jpg})]')");
+		});
+	</script>
+	<script>
+	$(function(){
+	    var swiper = new Swiper('.swiper-container', {
+	        pagination: '.swiper-pagination',
+	        paginationClickable: true,
+	        spaceBetween: 30,
+	        loop : true,
+	        autoplay : 2000,
+	    });
+	  });
+    </script>
+    <style type="text/css">
+    .swiper-container {
+        width: 500px;
+        height: 300px;
+        margin: 20px auto;
+    }
+    .swiper-slide {
+        text-align: center;
+        font-size: 18px;
+        background: #fff;
+
+        /* Center slide text vertically */
+        display: -webkit-box;
+        display: -ms-flexbox;
+        display: -webkit-flex;
+        display: flex;
+        -webkit-box-pack: center;
+        -ms-flex-pack: center;
+        -webkit-justify-content: center;
+        justify-content: center;
+        -webkit-box-align: center;
+        -ms-flex-align: center;
+        -webkit-align-items: center;
+        align-items: center;
+    }
+    .swiper-slide img{
+    	height: 300px;
+    }
+    </style>
+</head>
+<body>
+	<div class="two_cover" style="height: 400px;"></div>
+	<div class="two" style="height: 400px;" th:insert="@{base/header} :: html"></div>
+	<div class="download">
+		<div class="forum-reply-title">
+			<img alt="" src="" th:src="@{/images/download/zip.png}">
+			<h1 th:text="${download.title}">Google</h1>
+			<a class="shade" th:href="@{/download/download(id=${download.id})}">FREE下载</a>
+		</div>
+		<div style="display: -webkit-box;">
+			<div class="download_img">
+				<div class="swiper-container">
+					<div class="swiper-wrapper">
+						<div class="swiper-slide" th:each="data:${download.fileInterfaceList}">
+							<a href="#"> <img th:src="${data.path}">
+							</a>
+						</div>
+					</div>
+					<div class="swiper-pagination"></div>
+				</div>
+			</div>
+			<div class="download_sfotware_parameters">
+				<table>
+					<tr>
+						<td>收费:</td>
+						<td th:text="${#DictUtils.getDictLabel(download.cost,'cost','')}" >免费</td>
+					</tr>
+					<tr>
+						<td>语言:</td>
+						<td th:text="${#DictUtils.getDictLabel(download.language,'download_language','')}">简体中文</td>
+					</tr>
+					<tr>
+						<td>适用于:</td>
+						<td th:text="${#DictUtils.getDictLabel(download.system,'system','')}">windows</td>
+					</tr>
+					<tr>
+						<td>大小:</td>
+						<td th:text="${download.size}">23M</td>
+					</tr>
+					<tr>
+						<td>版本号:</td>
+						<td th:text="${download.version}">69.0.3497.58</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		<div class="download_sfotware_thumb" style="float: right;">
+			<button href="##"><img alt="" src="" th:src="@{/images/download/thumb-up.png}"></button>
+			<button href="##"><img alt="" src="" th:src="@{/images/download/thumb-down.png}"></button>
+		</div>
+		<div class="download_sfotware_details">
+			<h1>简介</h1>
+			<p th:text="${download.introduce}">
+			</p>
+		
+		</div>
+	</div>
+
+	<div th:insert="@{base/footer} :: html"></div>
+</body>
+</html>
